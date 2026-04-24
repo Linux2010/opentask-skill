@@ -7,15 +7,35 @@ description: OpenTask 分布式任务管理系统。查询和管理 OpenClaw 容
 
 分布式任务管理系统,为 OpenClaw 容器分配和管理任务。
 
+## 环境变量配置
+
+**必须在 OpenClaw 中配置以下环境变量：**
+
+```bash
+# OpenClaw 配置文件添加环境变量
+OPENTASK_API_KEY=your-api-key-here
+OPENTASK_HOST=http://127.0.0.1:8090
+```
+
+**配置方式：**
+
+| 方式 | 文件 | 说明 |
+|------|------|------|
+| **本地实例** | `~/.openclaw/.env` | 添加 `OPENTASK_API_KEY=xxx` |
+| **Docker 容器** | `openclaw.json` | `env.OPENTASK_API_KEY` |
+| **临时使用** | shell 变量 | `export OPENTASK_API_KEY=xxx` |
+
+---
+
 ## 服务信息
 
 | 信息 | 值 |
 |------|-----|
-| **服务地址** | `http://127.0.0.1:8090` |
+| **服务地址** | `$OPENTASK_HOST` (默认 `http://127.0.0.1:8090`) |
 | **容器访问宿主机** | `http://host.docker.internal:8090` |
 | **API 前缀** | `/api` |
 | **认证 Header** | `X-Bot-Key` |
-| **API Key** | `hope-bot-apikey-2026-0424` |
+| **API Key** | `$OPENTASK_API_KEY` |
 
 ### 容器环境检测
 
@@ -25,12 +45,10 @@ description: OpenTask 分布式任务管理系统。查询和管理 OpenClaw 容
 # 检测是否在容器中
 if [ -f /.dockerenv ] || grep -q "docker" /proc/1/cgroup 2>/dev/null; then
   OPENTASK_HOST="http://host.docker.internal:8090"
-else
-  OPENTASK_HOST="http://127.0.0.1:8090"
 fi
 
 # 使用变量访问
-curl -H "X-Bot-Key: hope-bot-apikey-2026-0424" "$OPENTASK_HOST/api/tasks/pending?assigned_to=anna"
+curl -H "X-Bot-Key: $OPENTASK_API_KEY" "$OPENTASK_HOST/api/tasks/pending?assigned_to=anna"
 ```
 
 ---
@@ -40,8 +58,8 @@ curl -H "X-Bot-Key: hope-bot-apikey-2026-0424" "$OPENTASK_HOST/api/tasks/pending
 ### 获取待执行任务
 
 ```bash
-curl -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
-  "http://127.0.0.1:8090/api/tasks/pending?assigned_to=anna"
+curl -H "X-Bot-Key: $OPENTASK_API_KEY" \
+  "$OPENTASK_HOST/api/tasks/pending?assigned_to=anna"
 ```
 
 返回按优先级排序的任务 (P0 > P1 > P2)。
@@ -49,26 +67,26 @@ curl -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
 ### 创建任务
 
 ```bash
-curl -X POST -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
+curl -X POST -H "X-Bot-Key: $OPENTASK_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"task_name":"发送消息","assigned_to":"anna","priority":"P1","created_by":"hope"}' \
-  "http://127.0.0.1:8090/api/tasks"
+  "$OPENTASK_HOST/api/tasks"
 ```
 
 ### 开始执行
 
 ```bash
-curl -X PUT -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
-  "http://127.0.0.1:8090/api/tasks/{id}/start"
+curl -X PUT -H "X-Bot-Key: $OPENTASK_API_KEY" \
+  "$OPENTASK_HOST/api/tasks/{id}/start"
 ```
 
 ### 完成任务
 
 ```bash
-curl -X PUT -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
+curl -X PUT -H "X-Bot-Key: $OPENTASK_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"result":"执行成功"}' \
-  "http://127.0.0.1:8090/api/tasks/{id}/complete"
+  "$OPENTASK_HOST/api/tasks/{id}/complete"
 ```
 
 ---
@@ -79,7 +97,7 @@ curl -X PUT -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
 
 ```markdown
 ## 检查待执行任务
-- [ ] 获取待执行任务:curl -s -H "X-Bot-Key: ..." "http://127.0.0.1:8090/api/tasks/pending?assigned_to=anna"
+- [ ] 获取待执行任务: curl -s -H "X-Bot-Key: $OPENTASK_API_KEY" "$OPENTASK_HOST/api/tasks/pending?assigned_to=anna"
 - [ ] 有任务则执行,无任务则 HEARTBEAT_OK
 ```
 
@@ -146,8 +164,8 @@ curl -X PUT -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
 
 ```bash
 # 获取待执行任务
-TASKS=$(curl -s -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
-  "http://127.0.0.1:8090/api/tasks/pending?assigned_to=anna")
+TASKS=$(curl -s -H "X-Bot-Key: $OPENTASK_API_KEY" \
+  "$OPENTASK_HOST/api/tasks/pending?assigned_to=anna")
 
 # 解析任务数量
 COUNT=$(echo "$TASKS" | python3 -c "import sys,json; print(len(json.load(sys.stdin)))")
@@ -156,7 +174,7 @@ if [ "$COUNT" -gt 0 ]; then
   echo "有 $COUNT 条待执行任务"
   # 开始执行第一条任务
   TASK_ID=$(echo "$TASKS" | python3 -c "import sys,json; print(json.load(sys.stdin)[0]['id'])")
-  curl -X PUT -H "X-Bot-Key: ..." "http://127.0.0.1:8090/api/tasks/$TASK_ID/start"
+  curl -X PUT -H "X-Bot-Key: $OPENTASK_API_KEY" "$OPENTASK_HOST/api/tasks/$TASK_ID/start"
 else
   echo "HEARTBEAT_OK"
 fi
@@ -166,23 +184,23 @@ fi
 
 ```bash
 # 1. 创建任务
-TASK=$(curl -s -X POST -H "X-Bot-Key: ..." \
+TASK=$(curl -s -X POST -H "X-Bot-Key: $OPENTASK_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"task_name":"发送每日问候","assigned_to":"anna","priority":"P1"}' \
-  "http://127.0.0.1:8090/api/tasks")
+  "$OPENTASK_HOST/api/tasks")
 
 TASK_ID=$(echo "$TASK" | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
 
 # 2. 开始执行
-curl -X PUT -H "X-Bot-Key: ..." "http://127.0.0.1:8090/api/tasks/$TASK_ID/start"
+curl -X PUT -H "X-Bot-Key: $OPENTASK_API_KEY" "$OPENTASK_HOST/api/tasks/$TASK_ID/start"
 
 # 3. 执行任务逻辑...
 
 # 4. 完成任务
-curl -X PUT -H "X-Bot-Key: ..." \
+curl -X PUT -H "X-Bot-Key: $OPENTASK_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"result":"问候消息已发送"}' \
-  "http://127.0.0.1:8090/api/tasks/$TASK_ID/complete"
+  "$OPENTASK_HOST/api/tasks/$TASK_ID/complete"
 ```
 
 ---
