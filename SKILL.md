@@ -11,19 +11,18 @@ description: OpenTask 分布式任务管理系统。查询和管理 OpenClaw 容
 
 **必须在 OpenClaw 中配置以下环境变量：**
 
-```bash
-# OpenClaw 配置文件添加环境变量
-OPENTASK_API_KEY=your-api-key-here
-OPENTASK_HOST=http://127.0.0.1:8090
-```
+| 变量 | 说明 | 示例值 |
+|------|------|------|
+| `OPENTASK_API_KEY` | API 认证密钥 | 从服务端获取 |
+| `OPENTASK_HOST` | 服务地址 | 本地或容器地址 |
 
 **配置方式：**
 
 | 方式 | 文件 | 说明 |
 |------|------|------|
-| **本地实例** | `~/.openclaw/.env` | 添加 `OPENTASK_API_KEY=xxx` |
-| **Docker 容器** | `openclaw.json` | `env.OPENTASK_API_KEY` |
-| **临时使用** | shell 变量 | `export OPENTASK_API_KEY=xxx` |
+| **本地实例** | `~/.openclaw/.env` | 添加环境变量 |
+| **Docker 容器** | `openclaw.json` | `env` 配置块 |
+| **临时使用** | shell 变量 | `export` 命令 |
 
 ---
 
@@ -31,24 +30,18 @@ OPENTASK_HOST=http://127.0.0.1:8090
 
 | 信息 | 值 |
 |------|-----|
-| **服务地址** | `$OPENTASK_HOST` (默认 `http://127.0.0.1:8090`) |
-| **容器访问宿主机** | `http://host.docker.internal:8090` |
+| **服务地址** | `$OPENTASK_HOST` |
 | **API 前缀** | `/api` |
 | **认证 Header** | `X-Bot-Key` |
 | **API Key** | `$OPENTASK_API_KEY` |
 
 ### 容器环境检测
 
-如果运行在 Docker 容器中,需要通过 `host.docker.internal` 访问宿主机服务:
+Docker 容器需要配置 `OPENTASK_HOST` 指向宿主机服务：
 
 ```bash
-# 检测是否在容器中
-if [ -f /.dockerenv ] || grep -q "docker" /proc/1/cgroup 2>/dev/null; then
-  OPENTASK_HOST="http://host.docker.internal:8090"
-fi
-
-# 使用变量访问
-curl -H "X-Bot-Key: $OPENTASK_API_KEY" "$OPENTASK_HOST/api/tasks/pending?assigned_to=anna"
+# 容器内配置示例（.env 文件）
+OPENTASK_HOST=http://host.docker.internal:8090
 ```
 
 ---

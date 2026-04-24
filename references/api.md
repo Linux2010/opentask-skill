@@ -4,11 +4,10 @@
 
 **必须在 OpenClaw 中配置以下环境变量：**
 
-```bash
-# OpenClaw 配置文件添加环境变量
-OPENTASK_API_KEY=your-api-key-here
-OPENTASK_HOST=http://127.0.0.1:8090
-```
+| 变量 | 说明 |
+|------|------|
+| `OPENTASK_API_KEY` | API 认证密钥（从服务端获取） |
+| `OPENTASK_HOST` | 服务地址（本地或容器地址） |
 
 ---
 
@@ -16,7 +15,7 @@ OPENTASK_HOST=http://127.0.0.1:8090
 
 | 信息 | 值 |
 |------|-----|
-| **服务地址** | `$OPENTASK_HOST` (默认 `http://127.0.0.1:8090`) |
+| **服务地址** | `$OPENTASK_HOST` |
 | **API 前缀** | `/api` |
 | **认证方式** | X-Bot-Key Header |
 | **API Key** | `$OPENTASK_API_KEY` |
