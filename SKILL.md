@@ -1,6 +1,7 @@
 ---
 name: opentask
 description: OpenTask 分布式任务管理系统。查询和管理 OpenClaw 容器的任务。使用场景：(1) 查询待执行任务、获取任务列表、任务详情；(2) 创建任务、开始执行、完成任务、标记失败、重试、取消；(3) 查看今日统计、任务日志；(4) HEARTBEAT 集成任务检查。触发短语："查询任务"、"获取任务"、"创建任务"、"完成任务"、"opentask"、"任务管理"。
+version: 1.1.0
 ---
 
 # OpenTask Skill
@@ -98,6 +99,22 @@ curl -X PUT -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
 | `completed` | 已完成 |
 | `failed` | 失败 |
 | `cancelled` | 已取消 |
+
+---
+
+## 日志记录
+
+每次状态变更都会写入 `bot_task_log` 表：
+
+| 字段 | 说明 |
+|------|------|
+| `task_id` | 任务 ID |
+| `action` | 操作类型 (start/complete/fail/retry/cancel) |
+| `old_status` | 原状态 |
+| `new_status` | 新状态 |
+| `message` | 操作消息 |
+| `operator` | 操作者 (system) |
+| `created_time` | 操作时间 |
 
 ---
 
