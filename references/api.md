@@ -1,13 +1,25 @@
 # OpenTask API Reference
 
+## 环境变量配置
+
+**必须在 OpenClaw 中配置以下环境变量：**
+
+```bash
+# OpenClaw 配置文件添加环境变量
+OPENTASK_API_KEY=your-api-key-here
+OPENTASK_HOST=http://127.0.0.1:8090
+```
+
+---
+
 ## 服务信息
 
 | 信息 | 值 |
 |------|-----|
-| **服务地址** | http://127.0.0.1:8090 |
-| **API 前缀** | /api |
+| **服务地址** | `$OPENTASK_HOST` (默认 `http://127.0.0.1:8090`) |
+| **API 前缀** | `/api` |
 | **认证方式** | X-Bot-Key Header |
-| **API Key** | hope-bot-apikey-2026-0424 |
+| **API Key** | `$OPENTASK_API_KEY` |
 
 ---
 
@@ -16,7 +28,7 @@
 所有 API 请求需要携带 `X-Bot-Key` 请求头：
 
 ```bash
-curl -H "X-Bot-Key: hope-bot-apikey-2026-0424" "http://127.0.0.1:8090/api/tasks"
+curl -H "X-Bot-Key: $OPENTASK_API_KEY" "$OPENTASK_HOST/api/tasks"
 ```
 
 ---
@@ -36,8 +48,8 @@ GET /api/tasks
 
 **示例：**
 ```bash
-curl -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
-  "http://127.0.0.1:8090/api/tasks?assigned_to=anna&status=pending"
+curl -H "X-Bot-Key: $OPENTASK_API_KEY" \
+  "$OPENTASK_HOST/api/tasks?assigned_to=anna&status=pending"
 ```
 
 ---
@@ -53,8 +65,8 @@ GET /api/tasks/pending
 
 **示例：**
 ```bash
-curl -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
-  "http://127.0.0.1:8090/api/tasks/pending?assigned_to=anna"
+curl -H "X-Bot-Key: $OPENTASK_API_KEY" \
+  "$OPENTASK_HOST/api/tasks/pending?assigned_to=anna"
 ```
 
 **返回：** 按优先级排序的任务列表 (P0 > P1 > P2)
@@ -69,8 +81,8 @@ GET /api/tasks/{id}
 
 **示例：**
 ```bash
-curl -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
-  "http://127.0.0.1:8090/api/tasks/1"
+curl -H "X-Bot-Key: $OPENTASK_API_KEY" \
+  "$OPENTASK_HOST/api/tasks/1"
 ```
 
 ---
@@ -95,10 +107,10 @@ POST /api/tasks
 
 **示例：**
 ```bash
-curl -X POST -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
+curl -X POST -H "X-Bot-Key: $OPENTASK_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"task_name":"发送消息","assigned_to":"anna","priority":"P1","created_by":"hope"}' \
-  "http://127.0.0.1:8090/api/tasks"
+  "$OPENTASK_HOST/api/tasks"
 ```
 
 ---
@@ -111,8 +123,8 @@ PUT /api/tasks/{id}/start
 
 **示例：**
 ```bash
-curl -X PUT -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
-  "http://127.0.0.1:8090/api/tasks/1/start"
+curl -X PUT -H "X-Bot-Key: $OPENTASK_API_KEY" \
+  "$OPENTASK_HOST/api/tasks/1/start"
 ```
 
 ---
@@ -132,10 +144,10 @@ PUT /api/tasks/{id}/complete
 
 **示例：**
 ```bash
-curl -X PUT -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
+curl -X PUT -H "X-Bot-Key: $OPENTASK_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"result":"任务完成"}' \
-  "http://127.0.0.1:8090/api/tasks/1/complete"
+  "$OPENTASK_HOST/api/tasks/1/complete"
 ```
 
 ---
@@ -155,10 +167,10 @@ PUT /api/tasks/{id}/fail
 
 **示例：**
 ```bash
-curl -X PUT -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
+curl -X PUT -H "X-Bot-Key: $OPENTASK_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"error_message":"网络超时"}' \
-  "http://127.0.0.1:8090/api/tasks/1/fail"
+  "$OPENTASK_HOST/api/tasks/1/fail"
 ```
 
 ---
@@ -173,8 +185,8 @@ PUT /api/tasks/{id}/retry
 
 **示例：**
 ```bash
-curl -X PUT -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
-  "http://127.0.0.1:8090/api/tasks/1/retry"
+curl -X PUT -H "X-Bot-Key: $OPENTASK_API_KEY" \
+  "$OPENTASK_HOST/api/tasks/1/retry"
 ```
 
 ---
@@ -187,8 +199,8 @@ PUT /api/tasks/{id}/cancel
 
 **示例：**
 ```bash
-curl -X PUT -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
-  "http://127.0.0.1:8090/api/tasks/1/cancel"
+curl -X PUT -H "X-Bot-Key: $OPENTASK_API_KEY" \
+  "$OPENTASK_HOST/api/tasks/1/cancel"
 ```
 
 ---
@@ -217,8 +229,8 @@ GET /api/logs/{task_id}
 
 **示例：**
 ```bash
-curl -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
-  "http://127.0.0.1:8090/api/logs/1"
+curl -H "X-Bot-Key: $OPENTASK_API_KEY" \
+  "$OPENTASK_HOST/api/logs/1"
 ```
 
 ---
