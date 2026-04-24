@@ -1,21 +1,37 @@
 ---
-name: opentask
-description: OpenTask 分布式任务管理系统。查询和管理 OpenClaw 容器的任务。使用场景：(1) 查询待执行任务、获取任务列表、任务详情；(2) 创建任务、开始执行、完成任务、标记失败、重试、取消；(3) 查看今日统计、任务日志；(4) HEARTBEAT 集成任务检查。触发短语："查询任务"、"获取任务"、"创建任务"、"完成任务"、"opentask"、"任务管理"。
-version: 1.1.0
+name: opentask-client
+description: OpenTask 分布式任务管理系统。查询和管理 OpenClaw 容器的任务。使用场景：(1) 查询待执行任务、获取任务列表、任务详情；(2) 创建任务、开始执行、完成任务、标记失败、重试、取消；(3) 查看今日统计、任务日志；(4) HEARTBEAT 集成任务检查。触发短语:"查询任务"、"获取任务"、"创建任务"、"完成任务"、"opentask"、"任务管理"。
 ---
 
-# OpenTask Skill
+# opentask-client Skill
 
-分布式任务管理系统，为 OpenClaw 容器分配和管理任务。
+分布式任务管理系统,为 OpenClaw 容器分配和管理任务。
 
 ## 服务信息
 
 | 信息 | 值 |
 |------|-----|
 | **服务地址** | `http://127.0.0.1:8090` |
+| **容器访问宿主机** | `http://host.docker.internal:8090` |
 | **API 前缀** | `/api` |
 | **认证 Header** | `X-Bot-Key` |
 | **API Key** | `hope-bot-apikey-2026-0424` |
+
+### 容器环境检测
+
+如果运行在 Docker 容器中,需要通过 `host.docker.internal` 访问宿主机服务:
+
+```bash
+# 检测是否在容器中
+if [ -f /.dockerenv ] || grep -q "docker" /proc/1/cgroup 2>/dev/null; then
+  OPENTASK_HOST="http://host.docker.internal:8090"
+else
+  OPENTASK_HOST="http://127.0.0.1:8090"
+fi
+
+# 使用变量访问
+curl -H "X-Bot-Key: hope-bot-apikey-2026-0424" "$OPENTASK_HOST/api/tasks/pending?assigned_to=anna"
+```
 
 ---
 
@@ -59,12 +75,12 @@ curl -X PUT -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
 
 ## HEARTBEAT 集成
 
-在 HEARTBEAT.md 中添加任务检查：
+在 HEARTBEAT.md 中添加任务检查:
 
 ```markdown
 ## 检查待执行任务
-- [ ] 获取待执行任务：curl -s -H "X-Bot-Key: ..." "http://127.0.0.1:8090/api/tasks/pending?assigned_to=anna"
-- [ ] 有任务则执行，无任务则 HEARTBEAT_OK
+- [ ] 获取待执行任务:curl -s -H "X-Bot-Key: ..." "http://127.0.0.1:8090/api/tasks/pending?assigned_to=anna"
+- [ ] 有任务则执行,无任务则 HEARTBEAT_OK
 ```
 
 ---
@@ -104,7 +120,7 @@ curl -X PUT -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
 
 ## 日志记录
 
-每次状态变更都会写入 `bot_task_log` 表：
+每次状态变更都会写入 `bot_task_log` 表:
 
 | 字段 | 说明 |
 |------|------|
@@ -126,7 +142,7 @@ curl -X PUT -H "X-Bot-Key: hope-bot-apikey-2026-0424" \
 
 ## 使用示例
 
-### 场景 1：HEARTBEAT 检查任务
+### 场景 1:HEARTBEAT 检查任务
 
 ```bash
 # 获取待执行任务
@@ -146,7 +162,7 @@ else
 fi
 ```
 
-### 场景 2：创建并执行任务
+### 场景 2:创建并执行任务
 
 ```bash
 # 1. 创建任务
